@@ -15,16 +15,33 @@ var GameBox = React.createClass({
         return {items:items};
     },
 
-    handleMatchingClick: function(itemObject) {
+    randomNumber: function(){
+        return Math.floor((Math.random() * this.state.items.length) + 0);
+    },
+
+    handleMatchingClick: function() {
+
+        var rand = this.randomNumber();
+        console.log(rand);
+
+        var test = [
+            {id: 4, btn: "btn btn-success", color:{backgroundColor: '#fff'}, value: "YIPIIIII"},
+            {id: 5, btn: "btn btn-warning", color:{backgroundColor: '#000'}, value: "YIPIIIII2"},
+        ];
+
+        var newArray = React.addons.update(this.state.items, {$splice: [[0, 1]]}); // => [1, 2, 3, 4]
+
         this.setState({
-            items: update(this.state.items, {$splice: [itemObject]})
-        })
+            items: React.addons.update(newArray,
+                {$push: test} // todo push a random item
+            ),
+        });
     },
 
     render: function() {
         return (
             <div>
-                <ItemList     items={this.state.items} />
+                <ItemList      items={this.state.items} />
                 <BtnActionList onMatchingClick={this.handleMatchingClick} btns={this.props.btns} current={this.state.items[0]} />
             </div>
         )
@@ -58,7 +75,7 @@ var BtnActionList = React.createClass({
     handleClick: function (btnObject) {
         if (this.props.current.color.backgroundColor == btnObject.color.backgroundColor) {
             this.setState({score: this.state.score + 1 });
-            this.props.onMatchingClick(this.props.current)
+            this.props.onMatchingClick()
         }
     },
 
