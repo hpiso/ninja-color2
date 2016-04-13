@@ -3,18 +3,29 @@ var btns = [
     {id: 2, btn: "btn btn-success", color:{backgroundColor: '#000'}, value: "Black"}
 ];
 
-var items = [
-    {id: 3, btn: "btn btn-success", color:{backgroundColor: '#fff'}, value: "White"},
-    {id: 4, btn: "btn btn-warning", color:{backgroundColor: '#000'}, value: "Black"},
-];
-
-
 var GameBox = React.createClass({
+
+    getInitialState: function() {
+
+        var items = [
+            {id: 3, btn: "btn btn-success", color:{backgroundColor: '#fff'}, value: "White"},
+            {id: 4, btn: "btn btn-warning", color:{backgroundColor: '#000'}, value: "Black"},
+        ];
+
+        return {items:items};
+    },
+
+    handleMatchingClick: function(itemObject) {
+        this.setState({
+            items: update(this.state.items, {$splice: [itemObject]})
+        })
+    },
+
     render: function() {
         return (
             <div>
-                <ItemList     items={this.props.items} />
-                <BtnActionList btns={this.props.btns} current={this.props.items[0]} />
+                <ItemList     items={this.state.items} />
+                <BtnActionList onMatchingClick={this.handleMatchingClick} btns={this.props.btns} current={this.state.items[0]} />
             </div>
         )
     }
@@ -47,6 +58,7 @@ var BtnActionList = React.createClass({
     handleClick: function (btnObject) {
         if (this.props.current.color.backgroundColor == btnObject.color.backgroundColor) {
             this.setState({score: this.state.score + 1 });
+            this.props.onMatchingClick(this.props.current)
         }
     },
 
@@ -69,6 +81,6 @@ var BtnActionList = React.createClass({
 });
 
 ReactDOM.render(
-  <GameBox btns={btns} items={items} />,
+  <GameBox btns={btns} />,
   document.getElementById('game')
 );
