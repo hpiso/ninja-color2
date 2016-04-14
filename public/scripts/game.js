@@ -1,39 +1,46 @@
-var btns = [
-    {id: 1, btn: "btn btn-primary", color:{backgroundColor: '#fff'}, value: "white"},
-    {id: 2, btn: "btn btn-success", color:{backgroundColor: '#000'}, value: "Black"}
+var colors = [
+    {code:'#7E4D76'},
+    {code:'#3DC9B3'},
+    {code:'#fff'},
+    {code:'#000'},
 ];
 
 var GameBox = React.createClass({
 
     getInitialState: function() {
 
-        var items = [
-            {id: 3, btn: "btn btn-success", color:{backgroundColor: '#fff'}, value: "White"},
-            {id: 4, btn: "btn btn-warning", color:{backgroundColor: '#000'}, value: "Black"},
-        ];
+        //10 items initialization
+        var items = [];
+        for (var i=0; i < 10; i++) {
+            items.push(
+                {class: "btn btn-success", color: this.props.colors[this.randomNumber()]}
+            )
+        }
 
-        return {items:items};
+        var btns = [];
+        for (var i=0; i < this.props.colors.length; i++) {
+            btns.push(
+                {class: "btn btn-success", color: this.props.colors[i]}
+            )
+        }
+
+        return {
+            items:items,
+            btns:btns
+        };
     },
 
     randomNumber: function(){
-        return Math.floor((Math.random() * this.state.items.length) + 0);
+        return Math.floor((Math.random() * this.props.colors.length) + 0);
     },
 
     handleMatchingClick: function() {
 
-        var rand = this.randomNumber();
-        console.log(rand);
-
-        var test = [
-            {id: 4, btn: "btn btn-success", color:{backgroundColor: '#fff'}, value: "YIPIIIII"},
-            {id: 5, btn: "btn btn-warning", color:{backgroundColor: '#000'}, value: "YIPIIIII2"},
-        ];
-
-        var newArray = React.addons.update(this.state.items, {$splice: [[0, 1]]}); // => [1, 2, 3, 4]
+        var newArray = React.addons.update(this.state.items, {$splice: [[0, 1]]});
 
         this.setState({
             items: React.addons.update(newArray,
-                {$push: test} // todo push a random item
+                {$push: [this.state.btns[this.randomNumber()]]}
             ),
         });
     },
@@ -42,7 +49,7 @@ var GameBox = React.createClass({
         return (
             <div>
                 <ItemList      items={this.state.items} />
-                <BtnActionList onMatchingClick={this.handleMatchingClick} btns={this.props.btns} current={this.state.items[0]} />
+                <BtnActionList onMatchingClick={this.handleMatchingClick} btns={this.state.btns} current={this.state.items[0]} />
             </div>
         )
     }
@@ -52,8 +59,8 @@ var ItemList = React.createClass({
     render: function() {
         var itemsDisplay = this.props.items.map(function(item, i) {
             return (
-                <a className={item.btn} style={item.color} key={i}>
-                    {item.value}
+                <a className={item.class} style={{backgroundColor: item.color.code}} key={i}>
+                    Item
                 </a>
             );
         }, this);
@@ -72,18 +79,22 @@ var BtnActionList = React.createClass({
             score: 0,
         };
     },
+
     handleClick: function (btnObject) {
-        if (this.props.current.color.backgroundColor == btnObject.color.backgroundColor) {
+        if (this.props.current.color.code == btnObject.color.code) {
             this.setState({score: this.state.score + 1 });
             this.props.onMatchingClick()
+        } else {
+            this.setState({score: this.state.score - 1 });
         }
     },
 
     render: function() {
         var btnActions = this.props.btns.map(function(btnAction, i) {
+
             return (
-                <a className={btnAction.btn} style={btnAction.color} onClick={this.handleClick.bind(null, btnAction)} key={i}>
-                    {btnAction.value}
+                <a className={btnAction.class} style={{backgroundColor: btnAction.color.code}} onClick={this.handleClick.bind(null, btnAction)} key={i}>
+                    CLICK
                 </a>
             );
         }, this);
@@ -98,6 +109,6 @@ var BtnActionList = React.createClass({
 });
 
 ReactDOM.render(
-  <GameBox btns={btns} />,
+  <GameBox colors={colors} />,
   document.getElementById('game')
 );
